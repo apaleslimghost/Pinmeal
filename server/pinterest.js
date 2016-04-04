@@ -25,3 +25,4 @@ Meteor.publish('pinterestBoard', function(boardId) {
 	this.ready();
 });
 
+
