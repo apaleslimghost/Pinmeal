@@ -8,6 +8,8 @@ binary-heap@1.0.6
 blaze@2.1.5
 blaze-tools@1.0.6
 boilerplate-generator@1.0.6
+caching-compiler@1.0.2
+caching-html-compiler@1.0.4
 callback-hook@1.0.6
 check@1.1.2
 ddp@1.2.3
@@ -48,6 +50,7 @@ observe-sequence@1.0.9
 ordered-dict@1.0.5
 promise@0.6.5
 random@1.0.7
+react-meteor-data@0.2.7
 reactive-var@1.0.7
 reload@1.1.6
 retry@1.0.5
@@ -56,6 +59,9 @@ spacebars@1.0.9
 spacebars-compiler@1.0.9
 standard-minifier-css@1.0.4
 standard-minifier-js@1.0.4
+static-html@1.0.5
+templating-tools@1.0.2
+tmeasday:check-npm-versions@0.2.0
 tracker@1.0.11
 ui@1.0.9
 underscore@1.0.6

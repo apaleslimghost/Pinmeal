@@ -1,22 +1,14 @@
-import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
+import {Meteor} from 'meteor/meteor';
+import React, {Component} from 'react';
+import {render} from 'react-dom';
 
-import './main.html';
+class Test extends Component {
+	render() {
+		return <h1>It works!</h1>
+	}
+}
 
-Template.hello.onCreated(function helloOnCreated() {
-  // counter starts at 0
-  this.counter = new ReactiveVar(0);
+Meteor.startup(() => {
+	render(<Test />, document.querySelector('main'));
 });
 
-Template.hello.helpers({
-  counter() {
-    return Template.instance().counter.get();
-  },
-});
-
-Template.hello.events({
-  'click button'(event, instance) {
-    // increment the counter when button is clicked
-    instance.counter.set(instance.counter.get() + 1);
-  },
-});
