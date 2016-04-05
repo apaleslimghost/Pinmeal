@@ -4,6 +4,7 @@ import {render} from 'react-dom';
 import { createContainer } from 'meteor/react-meteor-data';
 import dates from 'date-math';
 import dateInterval from 'date-interval';
+import moment from 'moment';
 
 import {BoardPinsCollection, PlansCollection} from '../shared/db';
 
@@ -21,7 +22,7 @@ const BoardPinsContainer = createContainer(({id}) => {
 }, BoardPins);
 
 const Day = ({date, plan, selectPin, clearPlan}) => <div>
-				<h3>{date.toISOString()}</h3>
+				<h3>{moment(date).format('ddd Do')}</h3>
 				{
 					plan ?
 						<Plan {...plan} clearPlan={clearPlan} /> :
