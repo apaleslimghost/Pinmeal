@@ -1,5 +1,6 @@
 import {Meteor} from 'meteor/meteor';
 import {HTTP} from 'meteor/http';
+import {ServiceConfiguration} from 'meteor/service-configuration';
 import url from 'url';
 
 function getPinterestUrl(path, query) {
@@ -25,4 +26,8 @@ Meteor.publish('pinterestBoard', function(boardId) {
 	this.ready();
 });
 
-
+ServiceConfiguration.configurations.upsert({service: 'pinterest'}, {
+	$set: {
+		clientId: '4827285153900413458'
+	}
+});

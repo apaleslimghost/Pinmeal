@@ -6,6 +6,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import dates from 'date-math';
 import dateInterval from 'date-interval';
 import moment from 'moment';
+import Blaze from 'meteor/gadicc:blaze-react-component';
 
 import {BoardPinsCollection, PlansCollection} from '../shared/db';
 
@@ -81,7 +82,9 @@ const WeekSelectorContainer = createContainer(() => {
 	};
 }, WeekSelector);
 
+const App = () => <Blaze template="loginButtons" />;
+
 Meteor.startup(() => {
-	render(<WeekSelectorContainer />, document.querySelector('main'));
+	render(<App />, document.querySelector('main'));
 });
 
