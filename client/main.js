@@ -59,14 +59,14 @@ const Week = ({date}) => <ul>{dateInterval(
 ).map(date => <li><DayContainer date={date} /></li>)}</ul>;
 
 const WeekSelector = ({nextWeek, prevWeek, resetDate, date}) => <div>
-				<button onClick={prevWeek}>&laquo;</button>
+				<button onClick={prevWeek} disabled={date < new Date}>&laquo;</button>
 				<button onClick={resetDate}>This week</button>
 				<button onClick={nextWeek}>&raquo;</button>
 				<Week date={date} />
 </div>;
 
 const WeekSelectorContainer = createContainer(() => {
-	const date = Session.get('date') || new Date;
+	const date = Session.get('date') || dates.day.floor(new Date);
 	return {
 		date,
 		nextWeek() {
@@ -76,8 +76,8 @@ const WeekSelectorContainer = createContainer(() => {
 			Session.set('date', dates.week.shift(date, -1));
 		},
 		resetDate() {
-			Session.set('date', new Date);
-		}
+			Session.set('date', dates.day.floor(new Date));
+		},
 	};
 }, WeekSelector);
 
