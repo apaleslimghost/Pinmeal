@@ -15,7 +15,7 @@ const BoardPins = ({pins, loading, onSelect}) => loading ?
 			<ul>{pins.map(pin => <li key={pin.id}><a href="#" onClick={() => onSelect(pin)}>{pin.note}</a></li>)}</ul>;
 
 const BoardPinsContainer = createContainer(({id}) => {
-	const handle = Meteor.subscribe('pinterestBoard', id);
+	const handle = Meteor.subscribe('pinterestBoardPins', Meteor.user().profile.selectedBoard);
 	const loading = !handle.ready();
 	return {
 		loading,
@@ -38,7 +38,7 @@ const DayContainer = createContainer(({date}) => {
 		date,
 		plan: PlansCollection.findOne({date}),
 		selectPin(pin) {
-			PlansCollection.insert({pin, date});
+			PlansCollection.insert({pin, date, owner: Meteor.userId()});
 		},
 		clearPlan({_id}) {
 			PlansCollection.remove({_id});

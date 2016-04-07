@@ -17,7 +17,7 @@ function getAccessToken(userId, service) {
 	return user.services[service].accessToken;
 }
 
-Meteor.publish('pinterestBoard', function(boardId) {
+Meteor.publish('pinterestBoardPins', function(boardId) {
 	const url = getPinterestUrl(`boards/${boardId}/pins`, {
 		access_token: getAccessToken(this.userId, 'pinterest')
 	});

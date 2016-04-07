@@ -1,11 +1,14 @@
 import {Meteor} from 'meteor/meteor';
 import {Mongo} from 'meteor/mongo';
 
+export const BoardsCollection = new Mongo.Collection('boards');
 export const BoardPinsCollection = new Mongo.Collection('boardPins');
 export const PlansCollection = new Mongo.Collection('plans');
 PlansCollection.allow({
-	insert() {return true;},
-	remove() {return true;},
+	insert: (userId, doc) => doc.owner === userId,
+	remove: (userId, doc) => doc.owner === userId,
+	update: (userId, doc) => doc.owner === userId,
+	fetch: ['owner']
 });
 
 if(Meteor.isClient) {
