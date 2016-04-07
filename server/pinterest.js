@@ -28,6 +28,7 @@ Meteor.publish('pinterestBoard', function(boardId) {
 
 ServiceConfiguration.configurations.upsert({service: 'pinterest'}, {
 	$set: {
-		clientId: '4827285153900413458'
+		clientId: process.env.PINTEREST_CLIENT,
+		secret: process.env.PINTEREST_SECRET,
 	}
 });
