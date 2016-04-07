@@ -12,7 +12,7 @@ import {BoardPinsCollection, PlansCollection} from '../shared/db';
 
 const BoardPins = ({pins, loading, onSelect}) => loading ?
 			<span>loading</span> :
-			<ul>{pins.map(pin => <li><a href="#" onClick={() => onSelect(pin)}>{pin.note}</a></li>)}</ul>;
+			<ul>{pins.map(pin => <li key={pin.id}><a href="#" onClick={() => onSelect(pin)}>{pin.note}</a></li>)}</ul>;
 
 const BoardPinsContainer = createContainer(({id}) => {
 	const handle = Meteor.subscribe('pinterestBoard', id);
@@ -57,14 +57,14 @@ const Week = ({date}) => <ul>{dateInterval(
 	dates.day,
 	dates.week.floor(date),
 	dates.week.ceil(date)
-).map(date => <li><DayContainer date={date} /></li>)}</ul>;
+).map(date => <li key={date.getTime()}><DayContainer date={date} /></li>)}</ul>;
 
 const WeekSelector = ({nextWeek, prevWeek, resetDate, date}) => <div>
 	<button onClick={prevWeek} disabled={date < new Date}>&laquo;</button>
 	<button onClick={resetDate}>This week</button>
 	<button onClick={nextWeek}>&raquo;</button>
 	<Week date={date} />
-	</div>;
+</div>;
 
 const WeekSelectorContainer = createContainer(() => {
 	const date = Session.get('date') || dates.day.floor(new Date);
