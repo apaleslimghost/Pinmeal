@@ -1,0 +1,3 @@
+[submodule "packages/accounts-pinterest"]
+	path = packages/accounts-pinterest
+	url = git://github.com/quarterto/accounts-pinterest.git

@@ -20,7 +20,7 @@ react-meteor-data
 http
 session
 accounts-ui
-semencovroman34:accounts-pinterest
 gadicc:blaze-react-component
 blaze-html-templates
 service-configuration
+accounts-pinterest
