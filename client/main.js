@@ -11,8 +11,8 @@ import Blaze from 'meteor/gadicc:blaze-react-component';
 import {BoardPinsCollection, PlansCollection} from '../shared/db';
 
 const BoardPins = ({pins, loading, onSelect}) => loading ?
-				<span>loading</span> :
-				<ul>{pins.map(pin => <li><a href="#" onClick={() => onSelect(pin)}>{pin.note}</a></li>)}</ul>;
+			<span>loading</span> :
+			<ul>{pins.map(pin => <li><a href="#" onClick={() => onSelect(pin)}>{pin.note}</a></li>)}</ul>;
 
 const BoardPinsContainer = createContainer(({id}) => {
 	const handle = Meteor.subscribe('pinterestBoard', id);
@@ -24,12 +24,12 @@ const BoardPinsContainer = createContainer(({id}) => {
 }, BoardPins);
 
 const Day = ({date, plan, selectPin, clearPlan}) => <div>
-				<h3>{moment(date).format('ddd Do')}</h3>
-				{
-					plan ?
-						<Plan {...plan} clearPlan={clearPlan} /> :
-						<BoardPinsContainer id="mwrbrennan/recipes" onSelect={selectPin}/>
-				}
+	<h3>{moment(date).format('ddd Do')}</h3>
+	{
+		plan ?
+			<Plan {...plan} clearPlan={clearPlan} /> :
+			<BoardPinsContainer id="mwrbrennan/recipes" onSelect={selectPin}/>
+	}
 </div>;
 
 const DayContainer = createContainer(({date}) => {
@@ -47,9 +47,9 @@ const DayContainer = createContainer(({date}) => {
 }, Day);
 
 const Plan = ({_id, pin, clearPlan}) => <div>
-				<button onClick={() => clearPlan({_id})}>X</button>
-				<Pin {...pin} />
-</div>;
+			<button onClick={() => clearPlan({_id})}>X</button>
+			<Pin {...pin} />
+			</div>;
 
 const Pin = ({note}) => <h4>{note}</h4>;
 
@@ -60,11 +60,11 @@ const Week = ({date}) => <ul>{dateInterval(
 ).map(date => <li><DayContainer date={date} /></li>)}</ul>;
 
 const WeekSelector = ({nextWeek, prevWeek, resetDate, date}) => <div>
-				<button onClick={prevWeek} disabled={date < new Date}>&laquo;</button>
-				<button onClick={resetDate}>This week</button>
-				<button onClick={nextWeek}>&raquo;</button>
-				<Week date={date} />
-</div>;
+	<button onClick={prevWeek} disabled={date < new Date}>&laquo;</button>
+	<button onClick={resetDate}>This week</button>
+	<button onClick={nextWeek}>&raquo;</button>
+	<Week date={date} />
+	</div>;
 
 const WeekSelectorContainer = createContainer(() => {
 	const date = Session.get('date') || dates.day.floor(new Date);
