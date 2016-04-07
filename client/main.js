@@ -82,9 +82,14 @@ const WeekSelectorContainer = createContainer(() => {
 	};
 }, WeekSelector);
 
-const App = () => <Blaze template="loginButtons" />;
+const App = ({user}) => <div>
+	<Blaze template="loginButtons" />
+	{user ? <WeekSelectorContainer /> : ''}
+</div>;
+
+const AppContainer = createContainer(() => ({user: Meteor.user()}), App);
 
 Meteor.startup(() => {
-	render(<App />, document.querySelector('main'));
+	render(<AppContainer />, document.querySelector('main'));
 });
 

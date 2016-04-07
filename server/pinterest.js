@@ -8,15 +8,19 @@ function getPinterestUrl(path, query) {
 		protocol: 'https',
 		host: 'api.pinterest.com',
 		pathname: `v1/${path}`,
-		query: {
-				...query,
-			access_token: process.env.PINTEREST_TOKEN
-		}
+		query
 	});
 }
 
+function getAccessToken(userId, service) {
+	var user = Meteor.users.findOne(userId);
+	return user.services[service].accessToken;
+}
+
 Meteor.publish('pinterestBoard', function(boardId) {
-	const url = getPinterestUrl(`boards/${boardId}/pins`);
+	const url = getPinterestUrl(`boards/${boardId}/pins`, {
+		access_token: getAccessToken(this.userId, 'pinterest')
+	});
 	const {data: {data}} = HTTP.get(url);
 
 	data.forEach(pin => {
