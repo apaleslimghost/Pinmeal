@@ -8,7 +8,7 @@ import dateInterval from 'date-interval';
 import moment from 'moment';
 import Blaze from 'meteor/gadicc:blaze-react-component';
 
-import {BoardPinsCollection, PlansCollection} from '../shared/db';
+import {BoardPinsCollection, PlansCollection, BoardsCollection} from '../shared/db';
 
 const BoardPins = ({pins, loading, onSelect}) => loading ?
 			<span>loading</span> :
@@ -28,7 +28,7 @@ const Day = ({date, plan, selectPin, clearPlan}) => <div>
 	{
 		plan ?
 			<Plan {...plan} clearPlan={clearPlan} /> :
-			<BoardPinsContainer id="mwrbrennan/recipes" onSelect={selectPin}/>
+			<BoardPinsContainer onSelect={selectPin}/>
 	}
 </div>;
 
@@ -82,9 +82,30 @@ const WeekSelectorContainer = createContainer(() => {
 	};
 }, WeekSelector);
 
+const BoardSelector = ({loading, boards, selectBoard, selectedBoard}) => <select onChange={selectBoard} disabled={loading} value={selectedBoard}>
+			<option>{loading && 'loading...'}</option>
+			{boards.map(board => <option value={board.id} key={board.id}>{board.name}</option>)}
+</select>;
+
+const BoardSelectorContainer = createContainer(() => {
+	const handle = Meteor.subscribe('pinterestBoards');
+	const loading = !handle.ready();
+	return {
+		loading,
+		boards: BoardsCollection.find().fetch(),
+		selectedBoard: Meteor.user().profile.selectedBoard,
+		selectBoard(ev) {
+			Meteor.users.update({_id: Meteor.userId()}, {$set: {
+				'profile.selectedBoard': ev.currentTarget.value
+			}});
+		}
+	};
+}, BoardSelector);
+
 const App = ({user}) => <div>
 	<Blaze template="loginButtons" />
-	{user ? <WeekSelectorContainer /> : ''}
+	{user && !user.profile.selectedBoard && <BoardSelectorContainer />}
+	{user &&  user.profile.selectedBoard && <WeekSelectorContainer  />}
 </div>;
 
 const AppContainer = createContainer(() => ({user: Meteor.user()}), App);

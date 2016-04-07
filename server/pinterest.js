@@ -30,6 +30,19 @@ Meteor.publish('pinterestBoardPins', function(boardId) {
 	this.ready();
 });
 
+Meteor.publish('pinterestBoards', function() {
+	const url = getPinterestUrl('me/boards', {
+		access_token: getAccessToken(this.userId, 'pinterest')
+	});
+	const {data: {data}} = HTTP.get(url);
+	
+	data.forEach(board => {
+		this.added('boards', board.id, board);
+	});
+
+	this.ready();
+});
+
 ServiceConfiguration.configurations.upsert({service: 'pinterest'}, {
 	$set: {
 		clientId: process.env.PINTEREST_CLIENT,
