@@ -47,9 +47,9 @@ const DayContainer = createContainer(({date}) => {
 }, Day);
 
 const Plan = ({_id, pin, clearPlan}) => <div>
-			<button onClick={() => clearPlan({_id})}>X</button>
-			<Pin {...pin} />
-			</div>;
+	<button onClick={() => clearPlan({_id})}>X</button>
+	<Pin {...pin} />
+</div>;
 
 const Pin = ({note}) => <h4>{note}</h4>;
 
@@ -113,4 +113,3 @@ const AppContainer = createContainer(() => ({user: Meteor.user()}), App);
 Meteor.startup(() => {
 	render(<AppContainer />, document.querySelector('main'));
 });
-
