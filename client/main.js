@@ -7,6 +7,7 @@ import dates from 'date-math';
 import dateInterval from 'date-interval';
 import moment from 'moment';
 import Blaze from 'meteor/gadicc:blaze-react-component';
+import Modal from 'react-modal';
 
 import {BoardPinsCollection, PlansCollection, BoardsCollection} from '../shared/db';
 
@@ -23,12 +24,12 @@ const BoardPinsContainer = createContainer(({id}) => {
 	};
 }, BoardPins);
 
-const Day = ({date, plan, selectPin, clearPlan}) => <div>
+const Day = ({date, plan, selectDateCard, clearPlan}) => <div>
 	<h3>{moment(date).format('ddd Do')}</h3>
 	{
 		plan ?
 			<Plan {...plan} clearPlan={clearPlan} /> :
-			<BoardPinsContainer onSelect={selectPin}/>
+			<button onClick={selectDateCard}>Choose a recipe...</button>
 	}
 </div>;
 
@@ -37,8 +38,8 @@ const DayContainer = createContainer(({date}) => {
 	return {
 		date,
 		plan: PlansCollection.findOne({date}),
-		selectPin(pin) {
-			PlansCollection.insert({pin, date, owner: Meteor.userId()});
+		selectDateCard() {
+			Session.set('cardSelectDate', date);
 		},
 		clearPlan({_id}) {
 			PlansCollection.remove({_id});
@@ -102,13 +103,29 @@ const BoardSelectorContainer = createContainer(() => {
 	};
 }, BoardSelector);
 
-const App = ({user}) => <div>
+const App = ({user, cardSelectDate, closeModal, selectPin}) => <div>
 	<Blaze template="loginButtons" />
+	<Modal isOpen={!!cardSelectDate} onRequestClose={closeModal}>
+		<BoardPinsContainer onSelect={selectPin}/>
+	</Modal>
 	{user && !user.profile.selectedBoard && <BoardSelectorContainer />}
 	{user &&  user.profile.selectedBoard && <WeekSelectorContainer  />}
 </div>;
 
-const AppContainer = createContainer(() => ({user: Meteor.user()}), App);
+const AppContainer = createContainer(() => {
+	var cardSelectDate = Session.get('cardSelectDate');
+	return {
+		user: Meteor.user(),
+		cardSelectDate,
+		closeModal() {
+			Session.set('cardSelectDate', false);
+		},
+		selectPin(pin) {
+			PlansCollection.insert({pin, date: cardSelectDate, owner: Meteor.userId()});
+			Session.set('cardSelectDate', false);
+		},
+	};
+}, App);
 
 Meteor.startup(() => {
 	render(<AppContainer />, document.querySelector('main'));
