@@ -1,6 +1,6 @@
 import {Meteor} from 'meteor/meteor';
-import {PlansCollection} from '../shared/db';
+import {MealsCollection} from '../shared/db';
 
-Meteor.publish('plans', function() {
-	return PlansCollection.find({owner: this.userId});
+Meteor.publish('meals', function() {
+	return MealsCollection.find({owner: this.userId});
 });

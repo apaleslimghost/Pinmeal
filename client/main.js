@@ -8,8 +8,9 @@ import dateInterval from 'date-interval';
 import moment from 'moment';
 import Blaze from 'meteor/gadicc:blaze-react-component';
 import Modal from 'react-modal';
+import {route} from 'meteor/kadira:flow-router';
 
-import {BoardPinsCollection, PlansCollection, BoardsCollection} from '../shared/db';
+import {BoardPinsCollection, MealsCollection, BoardsCollection} from '../shared/db';
 
 const BoardPins = ({pins, loading, onSelect}) => loading ?
 			<span>loading</span> :
@@ -24,31 +25,31 @@ const BoardPinsContainer = createContainer(({id}) => {
 	};
 }, BoardPins);
 
-const Day = ({date, plan, selectDateCard, clearPlan}) => <div>
+const Day = ({date, meal, selectDateCard, clearMeal}) => <div>
 	<h3>{moment(date).format('ddd Do')}</h3>
 	{
-		plan ?
-			<Plan {...plan} clearPlan={clearPlan} /> :
+		meal ?
+			<Meal {...meal} clearMeal={clearMeal} /> :
 			<button onClick={selectDateCard}>Choose a recipe...</button>
 	}
 </div>;
 
 const DayContainer = createContainer(({date}) => {
-	const plans = Meteor.subscribe('plans');
+	const meals = Meteor.subscribe('meals');
 	return {
 		date,
-		plan: PlansCollection.findOne({date}),
+		meal: MealsCollection.findOne({date}),
 		selectDateCard() {
 			Session.set('cardSelectDate', date);
 		},
-		clearPlan({_id}) {
-			PlansCollection.remove({_id});
+		clearMeal({_id}) {
+			MealsCollection.remove({_id});
 		}
 	}
 }, Day);
 
-const Plan = ({_id, pin, clearPlan}) => <div>
-	<button onClick={() => clearPlan({_id})}>X</button>
+const Meal = ({_id, pin, clearMeal}) => <div>
+	<button onClick={() => clearMeal({_id})}>X</button>
 	<Pin {...pin} />
 </div>;
 
@@ -121,7 +122,7 @@ const AppContainer = createContainer(() => {
 			Session.set('cardSelectDate', false);
 		},
 		selectPin(pin) {
-			PlansCollection.insert({pin, date: cardSelectDate, owner: Meteor.userId()});
+			MealsCollection.insert({pin, date: cardSelectDate, owner: Meteor.userId()});
 			Session.set('cardSelectDate', false);
 		},
 	};
