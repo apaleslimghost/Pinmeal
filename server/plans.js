@@ -1,6 +1,18 @@
 import {Meteor} from 'meteor/meteor';
-import {MealsCollection} from '../shared/db';
+import {PlansCollection, MealsCollection} from '../shared/db';
 
-Meteor.publish('meals', function() {
-	return MealsCollection.find({owner: this.userId});
+Meteor.publishComposite('plans', {
+	find() {
+		const cursor = PlansCollection.find({owner: this.userId});
+		if(!cursor.count()) {
+			PlansCollection.insert({owner: [this.userId]});
+		}
+		return cursor;
+	},
+
+	children: [{
+		find(plan) {
+			return MealsCollection.find({plan: plan.id});
+		}
+	}]
 });

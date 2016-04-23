@@ -24,3 +24,5 @@ gadicc:blaze-react-component
 blaze-html-templates
 service-configuration
 accounts-pinterest
+kadira:flow-router
+reywood:publish-composite

@@ -8,16 +8,17 @@ import dateInterval from 'date-interval';
 import moment from 'moment';
 import Blaze from 'meteor/gadicc:blaze-react-component';
 import Modal from 'react-modal';
-import {route} from 'meteor/kadira:flow-router';
+import {FlowRouter as router} from 'meteor/kadira:flow-router';
+import {Accounts} from 'meteor/accounts-base';
 
-import {BoardPinsCollection, MealsCollection, BoardsCollection} from '../shared/db';
+import {BoardPinsCollection, MealsCollection, BoardsCollection, PlansCollection} from '../shared/db';
 
 const BoardPins = ({pins, loading, onSelect}) => loading ?
 			<span>loading</span> :
 			<ul>{pins.map(pin => <li key={pin.id}><a href="#" onClick={() => onSelect(pin)}>{pin.note}</a></li>)}</ul>;
 
-const BoardPinsContainer = createContainer(({id}) => {
-	const handle = Meteor.subscribe('pinterestBoardPins', Meteor.user().profile.selectedBoard);
+const BoardPinsContainer = createContainer(({id, board}) => {
+	const handle = Meteor.subscribe('pinterestBoardPins', board);
 	const loading = !handle.ready();
 	return {
 		loading,
@@ -89,34 +90,32 @@ const BoardSelector = ({loading, boards, selectBoard, selectedBoard}) => <select
 			{boards.map(board => <option value={board.id} key={board.id}>{board.name}</option>)}
 </select>;
 
-const BoardSelectorContainer = createContainer(() => {
+const BoardSelectorContainer = createContainer(({plan}) => {
 	const handle = Meteor.subscribe('pinterestBoards');
 	const loading = !handle.ready();
 	return {
 		loading,
 		boards: BoardsCollection.find().fetch(),
-		selectedBoard: Meteor.user().profile.selectedBoard,
+		selectedBoard: plan.board,
 		selectBoard(ev) {
-			Meteor.users.update({_id: Meteor.userId()}, {$set: {
-				'profile.selectedBoard': ev.currentTarget.value
+			PlansCollection.update({_id: plan._id}, {$set: {
+				board: ev.currentTarget.value
 			}});
 		}
 	};
 }, BoardSelector);
 
-const App = ({user, cardSelectDate, closeModal, selectPin}) => <div>
-	<Blaze template="loginButtons" />
+const Plan = ({plan, cardSelectDate, closeModal, selectPin}) => <div>
 	<Modal isOpen={!!cardSelectDate} onRequestClose={closeModal}>
-		<BoardPinsContainer onSelect={selectPin}/>
+		<BoardPinsContainer onSelect={selectPin} board={plan.board} />
 	</Modal>
-	{user && !user.profile.selectedBoard && <BoardSelectorContainer />}
-	{user &&  user.profile.selectedBoard && <WeekSelectorContainer  />}
+	{plan.board ? <WeekSelectorContainer /> : <BoardSelectorContainer plan={plan} />}
 </div>;
 
-const AppContainer = createContainer(() => {
-	var cardSelectDate = Session.get('cardSelectDate');
+const PlanContainer = createContainer(({plan}) => {
+	const cardSelectDate = Session.get('cardSelectDate');
 	return {
-		user: Meteor.user(),
+		plan,
 		cardSelectDate,
 		closeModal() {
 			Session.set('cardSelectDate', false);
@@ -126,8 +125,23 @@ const AppContainer = createContainer(() => {
 			Session.set('cardSelectDate', false);
 		},
 	};
-}, App);
+}, Plan);
 
-Meteor.startup(() => {
-	render(<AppContainer />, document.querySelector('main'));
+const App = ({user, plan}) => <div>
+	<Blaze template="loginButtons" />
+	{user && (plan ? <PlanContainer plan={plan} /> : <div />)}
+</div>;
+
+const AppContainer = createContainer(() => {
+	const plans = Meteor.subscribe('plans');
+	const plan = PlansCollection.findOne({owner: Meteor.userId()});
+	return {user: Meteor.user(), plan};
+}, App)
+
+Accounts.onLogin(() => {
+
 });
+
+router.route('/', {action: () => {
+	render(<AppContainer />, document.querySelector('main'));
+}});
