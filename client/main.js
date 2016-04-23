@@ -129,12 +129,12 @@ const PlanContainer = createContainer(({plan}) => {
 
 const App = ({user, plan}) => <div>
 	<Blaze template="loginButtons" />
-	{user && (plan ? <PlanContainer plan={plan} /> : <div />)}
+	{user && (plan ? <PlanContainer plan={plan} /> : <div>Plan not found</div>)}
 </div>;
 
-const AppContainer = createContainer(() => {
+const AppContainer = createContainer(({planId}) => {
 	const plans = Meteor.subscribe('plans');
-	const plan = PlansCollection.findOne({owner: Meteor.userId()});
+	const plan = PlansCollection.findOne(planId ? {_id: planId} : {});
 	return {user: Meteor.user(), plan};
 }, App)
 
@@ -144,4 +144,8 @@ Accounts.onLogin(() => {
 
 router.route('/', {action: () => {
 	render(<AppContainer />, document.querySelector('main'));
+}});
+
+router.route('/plan/:planId', {action: ({planId}) => {
+	render(<AppContainer planId={planId} />, document.querySelector('main'));
 }});
