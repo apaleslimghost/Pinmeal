@@ -2,7 +2,7 @@ import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-import { createContainer } from 'meteor/react-meteor-data';
+import {createContainer} from 'meteor/react-meteor-data';
 import dates from 'date-math';
 import dateInterval from 'date-interval';
 import moment from 'moment';
@@ -10,6 +10,7 @@ import Blaze from 'meteor/gadicc:blaze-react-component';
 import Modal from 'react-modal';
 import {FlowRouter as router} from 'meteor/kadira:flow-router';
 import {Accounts} from 'meteor/accounts-base';
+import debounce from 'lodash.debounce';
 
 import {BoardPinsCollection, MealsCollection, BoardsCollection, PlansCollection} from '../shared/db';
 
@@ -129,6 +130,7 @@ const PlanContainer = createContainer(({plan}) => {
 
 const App = ({user, plan}) => <div>
 	<Blaze template="loginButtons" />
+	<UserSearchContainer selectUser={user => alert(JSON.stringify(user))} />
 	{user && (plan ? <PlanContainer plan={plan} /> : <div>Plan not found</div>)}
 </div>;
 
@@ -138,9 +140,29 @@ const AppContainer = createContainer(({planId}) => {
 	return {user: Meteor.user(), plan};
 }, App)
 
-Accounts.onLogin(() => {
+const UserSearch = ({results, onQuery, selectUser}) => <div>
+	<input onChange={onQuery} />
+	<ul>
+		{results.map(
+			user => <li key={user._id}><a href="#selectuser" onClick={() => selectUser(user)}>{user.profile.name}</a></li>
+		)}
+	</ul>
+</div>;
 
-});
+const UserSearchContainer = createContainer(({selectUser}) => {
+	const query = Session.get('userSearchQuery');
+	const search = Meteor.subscribe('userSearch', query);
+	const searchDebounced = debounce(query => {
+		Session.set('userSearchQuery', query);
+	}, 300);
+	return {
+		results: Meteor.users.find({score: {$exists: true}}).fetch(),
+		onQuery(ev) {
+			searchDebounced(ev.currentTarget.value);
+		},
+		selectUser
+	};
+}, UserSearch);
 
 router.route('/', {action: () => {
 	render(<AppContainer />, document.querySelector('main'));
